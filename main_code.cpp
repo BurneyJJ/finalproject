@@ -68,7 +68,6 @@ int main() {
     
     return 0;
 }
-//vvv     okay na to, kayo na sa function definitions @yue @mirabel B)    vvv
 
 void dispMenu(){//dito yung menu ([1] add product, [2] update product, eme)
 }
