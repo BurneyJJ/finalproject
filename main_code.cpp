@@ -42,10 +42,11 @@ int main() {
         dispMenu();
         cout << "Enter choice: ";
         cin >> choice;
-        while (!(cin >> choice)){
+        while (cin.fail()){
             cin.clear();
             cin.ignore(1000, '\n');
             cout << "Invalid input. Enter a number: ";
+            cin >> choice;
         }
         cin.ignore();
         
@@ -98,4 +99,19 @@ void saveFile(){//save inventory info ofstream file(fName)
 }
 
 void loadFile(){//load fName
+}
+
+bool confirm(const string& message){
+    char c;
+    cout << message << "(y/n): ";
+    cin >> c;
+    while (cin.fail()||(tolower(c) != 'y' && tolower(c) != 'n')){
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "Invalid input! Enter y or n: ";
+        cin >> c;
+    }
+    cin.ignore();
+    
+    return (tolower(c) == 'y');
 }
