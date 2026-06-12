@@ -89,6 +89,30 @@ void viewAll(){//if productCount == 0, none found; otherwise, list all products
 }
 
 void checkStock(){//list product info and status (out of stock, low stock, in stock)
+    if (productCount == 0){
+        cout << "No products in inventory.\n";
+        return;
+    }
+    cout << left << setw(10) << "ID" 
+         << setw(20) << "Name" 
+         << setw(15) << "Quantity" 
+         << setw(15) << "Status" << endl;
+    for (int i = 0; i < productCount; i++){
+        string status;
+        
+        if (inv[i].quantity == 0)
+            status = "OUT OF STOCK";
+        else if (inv[i].quantity <= 30)
+            status = "LOW STOCK";
+        else if (inv[i].quantity <= 75)
+            status = "IN STOCK";
+        else status = "FULL STOCK";
+        
+        cout << left << setw(10) << inv[i].id
+             << setw(20) << inv[i].name
+             << setw(15) << inv[i].quantity
+             << setw(15) << status << endl;
+    }
 }
 
 void processOrder(){//customer name input, list all products, enter [product ID, quantity], add another item?, order receipt (display)
