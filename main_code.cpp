@@ -120,9 +120,49 @@ void processOrder(){//customer name input, list all products, enter [product ID,
 }
 
 void saveFile(){//save inventory info ofstream file(fName)
+    ofstream file(fName);
+    
+    if (!file.is_open()) {
+        cout << "Error: Could not open file for saving.\n";
+        return;
+    }
+
+    for (int i = 0; i < productCount; i++) {
+        file << inv[i].id << endl;
+        file << inv[i].name << endl;
+        file << inv[i].category << endl;
+        file << inv[i].price << endl;
+        file << inv[i].quantity << endl;
+    }
+
+    file.close();
 }
 
 void loadFile(){//load fName
+    ifstream file(fName);
+    
+    if (!file.is_open()) {
+        return; 
+    }
+
+    productCount = 0; 
+
+    while (file >> inv[productCount].id && productCount < MAX) {
+        
+        file.ignore(); 
+
+        getline(file, inv[productCount].name);
+        getline(file, inv[productCount].category);
+        
+        file >> inv[productCount].price;
+        file >> inv[productCount].quantity;
+        
+        file.ignore(); 
+
+        productCount++; 
+    }
+
+    file.close();
 }
 
 bool confirm(const string& message){
