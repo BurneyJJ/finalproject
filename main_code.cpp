@@ -70,6 +70,90 @@ int main() {
     return 0;
 }
 
+    void dispMenu(){
+    //kelangan ng ui/ux, parang header o title ng project :)
+    //dito yung menu ([1] add product, [2] update product, eme)
+    cout << "\n========================================\n";
+    cout << "     INVENTORY MANAGEMENT SYSTEM\n";
+    cout << "========================================\n";
+    cout << "   [1] Add Product\n";
+    cout << "   [2] Update Product\n";
+    cout << "   [3] Delete Product\n";
+    cout << "   [4] Search Product\n";
+    cout << "   [5] View All Products\n";
+    cout << "   [6] Check Stock Status\n";
+    cout << "   [7] Process Customer Order\n";
+    cout << "   [0] Exit & Save\n";
+    cout << "========================================\n";
+    cout << "   Slots Available: " << (MAX - productCount) << "/" << MAX << endl;
+    cout << "========================================\n";
+    }
+
+void addProduct(){
+    //check if productCount >= MAX(100)
+    if(productCount >= MAX){
+        cout << "\n[ERROR] Inventory is full! Cannot add more products.\n";
+        return;
+    }
+    
+    //genId();
+    Product newProduct;
+    newProduct.id = genId();
+    
+    cout << "\n--- ADD NEW PRODUCT ---\n";
+    cout << "Generated ID: " << newProduct.id << endl;
+    
+    cin.ignore();
+    
+    //user input
+    //Category
+    cout << "Enter Category: ";
+    getline(cin, newProduct.category);
+    while(newProduct.category.empty()){
+        cout << "Category cannot be empty. Enter again: ";
+        getline(cin, newProduct.category);
+    }
+    
+    //Name of Product
+    cout << "Enter Product Name: ";
+    getline(cin, newProduct.name);
+    while(newProduct.name.empty()){
+        cout << "Name cannot be empty. Enter again: ";
+        getline(cin, newProduct.name);
+    }
+    
+    //Price
+    cout << "Enter Price (PHP): ";
+    cin >> newProduct.price;
+    while(cin.fail() || newProduct.price < 0){
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "Invalid price. Enter a positive number: ";
+        cin >> newProduct.price;
+    }
+    
+    //Quantity(limit of 100 per product)
+    cout << "Enter Quantity (max 100): ";
+    cin >> newProduct.quantity;
+    while(cin.fail() || newProduct.quantity < 0 || newProduct.quantity > 100){
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "Invalid quantity. Enter 0-100: ";
+        cin >> newProduct.quantity;
+    }
+    
+    //productCount++
+    inv[productCount] = newProduct;
+    productCount++;
+    
+    //display amount of product slots left
+    cout << "\n[SUCCESS] Product added successfully!\n";
+    cout << "Slots remaining: " << (MAX - productCount) << "/" << MAX << endl;
+    
+    //saveFile();
+    saveFile();
+}
+
 void dispMenu(){//dito yung menu ([1] add product, [2] update product, eme)
 }
 
