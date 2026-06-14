@@ -15,6 +15,11 @@ struct Product{
     int quantity;
 };
 
+struct OrderItem{
+    int productIndex;
+    int quantity;
+};
+
 Product inv[MAX];
 int productCount = 0;
 
@@ -31,10 +36,11 @@ void saveFile();
 void loadFile();
 int  findProduct(int id);//kung gusto nila magsearch using ID (1001-1100)
 int  genId();//para sa int id, 1000 basis natin? like 1001-1100 para 100 items?
-bool confirm(const string& message);//confirmation prompt
+bool confirm(const string& message);
 
 
 int main() {
+    loadFile();
     
     int choice;
     
@@ -70,9 +76,7 @@ int main() {
     return 0;
 }
 
-    void dispMenu(){
-    //kelangan ng ui/ux, parang header o title ng project :)
-    //dito yung menu ([1] add product, [2] update product, eme)
+void dispMenu(){
     cout << "\n========================================\n";
     cout << "     INVENTORY MANAGEMENT SYSTEM\n";
     cout << "========================================\n";
@@ -87,7 +91,7 @@ int main() {
     cout << "========================================\n";
     cout << "   Slots Available: " << (MAX - productCount) << "/" << MAX << endl;
     cout << "========================================\n";
-    }
+}
 
 void addProduct(){
     //check if productCount >= MAX(100)
@@ -102,8 +106,6 @@ void addProduct(){
     
     cout << "\n--- ADD NEW PRODUCT ---\n";
     cout << "Generated ID: " << newProduct.id << endl;
-    
-    cin.ignore();
     
     //user input
     //Category
@@ -154,12 +156,6 @@ void addProduct(){
     saveFile();
 }
 
-void dispMenu(){//dito yung menu ([1] add product, [2] update product, eme)
-}
-
-void addProduct(){//add product info
-}
-
 void updProduct(){//enter product id, display product info, prompt user to add new info
 }
 
@@ -199,8 +195,225 @@ void checkStock(){//list product info and status (out of stock, low stock, in st
     }
 }
 
-void processOrder(){//customer name input, list all products, enter [product ID, quantity], add another item?, order receipt (display)
-                    //save to file "transactions.log" (Customer Name, PHP, Order Info)
+void processOrder(){
+    if (productCount == 0){
+        cout << "No products in inventory.\n";
+        return;
+    }
+    string customerName;
+    OrderItem cart[MAX];
+    int cartCount = 0;
+    
+    cout << "Customer Name: ";
+    getline(cin, customerName);
+    
+    viewAll();
+    
+    do{
+        int id;
+        int qty;
+        
+        cout << "\nEnter Product ID: ";
+        cin >> id;
+        
+        while (cin.fail()){
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Invalid input! Enter a product ID: ";
+            cin >> id;
+        }
+        
+        int index = findProduct(id);
+        if (index == -1){
+            cout << "Product not found.\n";
+            continue;
+        }
+        
+        cout << "Quantity to Buy: ";
+        cin >> qty;
+        
+        while (cin.fail() || qty <= 0){
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Invalid input! Enter a positive number: ";
+            cin >> qty;
+        }
+        
+        if (cartCount >= MAX){
+                cout << "Order is full.\n";
+                break;
+        }
+        
+        if (qty > inv[index].quantity){
+            cout << "Not enough stock! Available: " << inv[index].quantity << endl;
+            continue;
+        } else {
+            cart[cartCount].productIndex = index;
+            cart[cartCount].quantity = qty;
+            cartCount++;
+            cout << "Added to order.\n";
+        }
+    }while(confirm("Add another item? "));
+    
+    if (cartCount == 0){
+        cout << "No items ordered.\n";
+        return;
+    }
+    
+    double total = 0;
+    
+    cout << "\nORDER SUMMARY\n";
+    
+    cout << left << setw(10) << "ID" 
+         << setw(20) << "Name" 
+         << setw(15) << "Quantity" 
+         << setw(15) << "Subtotal" << endl; 
+         
+    for (int i = 0; i < cartCount; i++){
+        int p = cart[i].productIndex;
+        double subtotal = cart[i].quantity * inv[p].price;
+        total += subtotal;
+        
+        cout << left << setw(10) << inv[p].id
+             << setw(20) << inv[p].name
+             << setw(15) << cart[i].quantity
+             << setw(15) << fixed << setprecision(2) << subtotal << endl; 
+    }
+    
+    cout << "\nTOTAL: PHP " << fixed << setprecision(2) << total << endl;
+    
+    while(confirm("Would you like to remove or edit an item? ")){
+        int editId;
+        int cartIndex = -1;
+        
+        cout << "Enter Product ID: ";
+        cin >> editId;
+        
+        for (int i = 0; i < cartCount; i++){
+            int p = cart[i].productIndex;
+            
+            if (inv[p].id == editId){
+                cartIndex = i;
+                break;
+            }
+        }
+        
+        if (cartIndex == -1) cout << "Product not found in order.\n";
+        else{
+            if (confirm("Remove product entirely?")){
+                for(int i = cartIndex; i < cartCount - 1; i++){
+                    cart[i] = cart[i + 1];
+                }
+                cartCount--;
+                
+                if(cartCount == 0){
+                    cout << "Order is now empty.\n";
+                    return;
+                }
+                cout << "Product removed.\n";
+            } else {
+                int newQuantity;
+                
+                cout << "Enter new quantity: ";
+                cin >> newQuantity;
+                
+                int p = cart[cartIndex].productIndex;
+                
+                while(cin.fail()||newQuantity <= 0||newQuantity>inv[p].quantity){
+                    cin.clear();
+                    cin.ignore(1000, '\n');
+                    cout << "Invalid input. Enter again: ";
+                    cin >> newQuantity;
+                }
+                cart[cartIndex].quantity = newQuantity;
+                cout << "Quantity updated.\n";
+            }
+        }
+    }
+    
+    total = 0;
+    for (int i = 0; i < cartCount; i++){
+        int p = cart[i].productIndex;
+        total += cart[i].quantity * inv[p].price;
+    }
+    
+    cout << "\nUpdated Total: PHP " << fixed << setprecision(2) << total << endl;
+    
+    if (!confirm("Proceed to payment? ")){
+        cout << "Order cancelled.\n";
+        return;
+    }
+    
+    double payment;
+    do{
+        cout << "Payment Amount: PHP ";
+        cin >> payment;
+        
+        while(cin.fail()){
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Invalid amount. Enter again: ";
+            cin >> payment;
+        }
+        
+        if (payment < total) cout << "Insufficient payment.\n";
+    }while(payment < total);
+    
+    double change = payment - total;
+    
+    for (int i = 0; i < cartCount; i++){
+        int p = cart[i].productIndex;
+        inv[p].quantity -= cart[i].quantity;
+    }
+    
+    saveFile();
+    
+    cout << "RECEIPT\n";
+    cout << "Customer: " << customerName << endl;
+    
+    cout << left << setw(10) << "Name" 
+         << setw(20) << "Quantity" 
+         << setw(15) << "Price" 
+         << setw(15) << "Subtotal" << endl; 
+    
+    for (int i = 0; i < cartCount; i++){
+        int p = cart[i].productIndex;
+        double subtotal = cart[i].quantity * inv[p].price;
+        
+        cout << left << setw(20) << inv[p].name
+             << setw(15) << cart[i].quantity
+             << setw(15) << fixed << setprecision(2) << inv[p].price 
+             << setw(15) << subtotal << endl;
+    }
+    
+    cout << "\nTotal  : PHP " << total << endl
+         << "Payment: PHP " << payment << endl
+         << "Change : PHP " << change << endl;
+         
+    ofstream log("transactions.log", ios::app);
+    
+    if(log.is_open()){
+        log << fixed << setprecision(2);
+        
+        log << "\n-------\n";
+        log << "Customer: " << customerName << endl;
+        
+        for (int i = 0; i < cartCount; i++){
+            int p = cart[i].productIndex;
+            double subtotal = cart[i].quantity * inv[p].price;
+            
+            log << inv[p].name << " x" << cart[i].quantity 
+                << " = PHP " << subtotal << endl;
+        }
+        
+        log << "Total  : PHP " << total << endl;
+        log << "Payment: PHP " << payment << endl;
+        log << "Change : PHP " << change << endl;
+        
+        log.close();
+    }
+    
+    cout << "\nTransaction completed successfully.\n";
 }
 
 void saveFile(){//save inventory info ofstream file(fName)
