@@ -162,11 +162,54 @@ void updProduct(){//enter product id, display product info, prompt user to add n
 void delProduct(){//enter product id, confirm, delete
 }
 
-void searchProduct(){//enter product id, display info if found
+void searchProduct(){//enter product id, display info if found  int id;
+    bool found = false;
+     // ask user for product ID to search
+    cout << "Enter Product ID: ";
+    cin >> id;
+    // loop through all products to find matching ID
+    for (int i = 0; i < productCount; i++) {
+        if (products[i].id == id) {
+            cout << "\nProduct Found!\n";
+            cout << "ID: " << products[i].id << endl;
+            cout << "Name: " << products[i].name << endl;
+            cout << "Price: " << products[i].price << endl;
+            found = true;
+        }
+    }
+    // if no product was found after loop
+    if (!found) {
+        char choice;
+        cout << "Product not found. Add product? (Y/N): ";
+        cin >> choice;
+
+        if (choice == 'Y' || choice == 'y') {
+            addProduct();
+        }
+    }
 }
 
-void viewAll(){//if productCount == 0, none found; otherwise, list all products
+
+void viewAll(){//if productCount == 0, none found; otherwise, list all products if (productCount == 0) {
+    // check kung walang laman ang product list
+    cout << "No products." << endl;
+     }
+    else {
+    // loop through all products
+    for (int i = 0; i < productCount; i++) {
+
+        // display product details per item
+        cout << "ID: " << products[i].id << endl;
+        cout << "Name: " << products[i].name << endl;
+        cout << "Price: " << products[i].price << endl;
+        cout << "Category: " << products[i].category << endl;
+
+        // spacing lang para readable output
+        cout << endl;
+    }
 }
+
+
 
 void checkStock(){//list product info and status (out of stock, low stock, in stock)
     if (productCount == 0){
