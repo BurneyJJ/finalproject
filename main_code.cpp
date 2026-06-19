@@ -198,6 +198,10 @@ void delProduct(){
 }
 
 void searchProduct(){
+    if (productCount == 0){
+        cout << "[!] No products found in the inventory.\n";
+        return;
+    }
     bool found = false;
     cout << "How would you like to search a product? \n";
     cout << "  [1] ID \n";
