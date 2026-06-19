@@ -206,6 +206,7 @@ void searchProduct(){
     cout << "How would you like to search a product? \n";
     cout << "  [1] ID \n";
     cout << "  [2] Name\n";
+    cout << "  [0] Cancel/Exit\n";
     int choice = getInput("Enter Your Choice: ", 0, 2);
     
     switch (choice){
@@ -231,6 +232,10 @@ void searchProduct(){
                 }
             }
         }break;
+        case 0:
+            cout << "Thank you!\n";
+            found = true;
+            break;
     }
     
     if (!found) {
