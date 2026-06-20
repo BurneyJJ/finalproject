@@ -87,7 +87,7 @@ void dispMenu(){
          << "   [7] Process Customer Order\n"
          << "   [0] Exit & Save\n"
          << "========================================\n"
-         << " Products in Inverntory: " << productCount << "/"  << MAX << "\n"
+         << " Products in Inventory: " << productCount << "/"  << MAX << "\n"
          << "========================================\n";
 }
 
