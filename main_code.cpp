@@ -126,7 +126,7 @@ void addProduct(){
         productCount++;
         sortByID();
         cout << "========================================================\n"
-             << "[SUCCESS!] Your product has been added successfully!\n"
+             << "[SUCCESS!] Your product has been added successfully! \n"
              << "Slots remaining: " << (MAX - productCount) << "/" << MAX << endl
              << "========================================================\n";
         saveFile();
