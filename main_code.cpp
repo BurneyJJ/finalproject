@@ -576,15 +576,15 @@ string tolowerCase(string s){
 }
 
 bool confirm(const string& message){
-    char c;
+    string c;
     cout << message << "(y/n): ";
     cin >> c;
-    while (cin.fail()||(tolower(c) != 'y' && tolower(c) != 'n')){
+    while (c.length() != 1 ||(tolower(c[0]) != 'y' && tolower(c[0]) != 'n')){
         cin.clear();
         cin.ignore(1000, '\n');
         cout << "[!] Invalid input. Enter y or n: ";
         cin >> c;
     }
     cin.ignore();
-    return (tolower(c) == 'y');
+    return (tolower(c[0]) == 'y');
 }
